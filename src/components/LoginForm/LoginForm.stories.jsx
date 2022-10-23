@@ -36,3 +36,16 @@ Default.play = async ({ args, canvasElement }) => {
 
   await waitFor(() => expect(args.onSubmit).toHaveBeenCalled())
 }
+
+export const InvalidEmail = Template.bind({})
+InvalidEmail.args = { ...Default.args }
+
+InvalidEmail.play = async ({ args, canvasElement }) => {
+  const canvas = within(canvasElement)
+  // 不正なメールアドレスを指定
+  await userEvent.type(canvas.getByLabelText('メールアドレス'), 'tomof.example.com')
+  await userEvent.type(canvas.getByLabelText('パスワード'), 'supersecret')
+  await userEvent.click(canvas.getByRole('button'))
+  await waitFor(() => expect(canvas.getByText('正しいメールアドレスを入力してください')).toBeTruthy())
+  await waitFor(() => expect(args.onSubmit).not.toHaveBeenCalled())
+}
